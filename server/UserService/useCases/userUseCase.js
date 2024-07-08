@@ -1,7 +1,7 @@
 const userRepository = require('../repositories/userRepository')
 const UserRepository = require('../repositories/userRepository')
 const bcrypt = require('bcrypt')
-const { generateToken } = require('../Utils/jwtUtils')
+const { generateToken, generateRefreshToken } = require('../Utils/jwtUtils')
 
 class UserUseCase{
     async signupUser(userName, email, password){
@@ -13,7 +13,11 @@ class UserUseCase{
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(password, salt)
             const newUser = await UserRepository.createUser({userName, email, password:hashedPassword})
-            return { user: newUser, token: generateToken(newUser) }
+            const token = generateToken(newUser)
+            const refreshToken = generateRefreshToken(newUser)
+            //await this.refreshTokenUpdate(newUser._id, refreshToken) //store refreshtoken in the db
+            await UserRepository.updateRefreshTokenRedis(newUser._id, refreshToken)
+            return {user: newUser, token, refreshToken}
         }
         catch(error){
             throw new Error(`Usecase signup error ${error}`)
@@ -30,7 +34,11 @@ class UserUseCase{
             if(!isMatch){
                 throw new Error('Wrong Credentials')
             }
-            return { user, token: generateToken(user) }
+            const token = generateToken(user)
+            const refreshToken = generateRefreshToken(user)
+            //await this.refreshTokenUpdate(user._id, refreshToken) //store refreshToken in db
+            await UserRepository.updateRefreshTokenRedis(user._id, refreshToken)
+            return {user, token, refreshToken}
         }
         catch(error){
             throw new Error(`Usecase login error ${error}`)

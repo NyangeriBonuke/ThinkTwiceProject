@@ -1,4 +1,5 @@
 const User = require('../models/UserModel')
+const redisClient = require('../Utils/redisClient')
 
 class UserRepository{
     async createUser(userData){
@@ -48,6 +49,47 @@ class UserRepository{
         catch(error){
             throw new Error(`Delete user error ${error}`)
         }
+    }
+
+    /*async updateRefreshToken(id, refreshToken){
+        try{
+            await User.findByIdAndUpdate(id, { refreshToken })
+        }
+        catch(error){
+            throw new Error(`Update refresh token error ${error}`)
+        }
+    }
+    */
+
+    async updateRefreshTokenRedis(userId, refreshToken){
+        try{
+            await redisClient.set(`refreshToken:${userId}`, refreshToken, 'EX', 7 * 24 * 60 * 60)
+        }
+        catch(error){
+            throw new Error(`Redis update refresh token ${error}`)
+        }
+    }
+
+    async getRefreshToken(userId){
+        return new Promise((resolve, reject) => {
+            redisClient.get(`refreshToken:${userId}`, (err, token) => {
+                if(err){
+                    return reject(`Get refresh token error ${err}`)
+                }
+                resolve(token)
+            })
+        })
+    }
+
+    async deleteRefreshToken(userId){
+        return new Promise((resolve, reject) => {
+            redisClient.del(`refreshToken:${userId}`, (err) => {
+                if(err){
+                    return reject(`Delete refresh token error ${err}`)
+                }
+                resolve()
+            })
+        })
     }
 }
 

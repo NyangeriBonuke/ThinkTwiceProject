@@ -1,5 +1,6 @@
 const UserUseCase = require('../useCases/userUseCase')
 const jwt = require('jsonwebtoken')
+const { verfiyRefreshToken, generateRefreshToken, generateToken } = require('../Utils/jwtUtils')
 require('dotenv').config()
 
 class UserController{
@@ -9,8 +10,8 @@ class UserController{
             if(!userName || !email || !password){
                 res.status(400).send('All fields are required')
             }
-            const { user, token } = await UserUseCase.signupUser(userName, email, password)
-            res.status(201).json({user, token})
+            const { user, token, refreshToken } = await UserUseCase.signupUser(userName, email, password)
+            res.status(201).json({user, token, refreshToken})
         }
         catch(error){
             if(error.message === 'Wrong Credentials'){
@@ -28,8 +29,8 @@ class UserController{
             if(!email || !password){
                 res.status(400).send('All fields are required')
             }
-            const { user, token } = await UserUseCase.loginUser(email, password)
-            res.status(200).json({user, token})
+            const { user, token, refreshToken } = await UserUseCase.loginUser(email, password)
+            res.status(200).json({user, token, refreshToken})
         }
         catch(error){
             res.status(500).json({error: error.message})
@@ -61,10 +62,19 @@ class UserController{
 
     async refreshToken(req, res){
         try{
-            const { token } = req.body
-            if(!token){
+            const { refreshToken } = req.body
+            if(!refreshToken){
                 return res.status(400).json({error: 'Refresh token is required'})
-            } 
+            }
+            const payload = verfiyRefreshToken(refreshToken)
+            const user = await UserUseCase.findUserUsingId(payload.id)
+            //if(!user || user.refreshToken !== refreshToken){ //check if the user.refreshToken exists in the database
+               // return res.status(403).json({error: 'Invalid refresh token'})
+            //}
+            const newToken = generateToken(user)
+            const newRefreshToken = generateRefreshToken(user)
+            //await UserUseCase.updateRefreshToken(user._id, newRefreshToken) //storing the refreshtoken in the db
+            res.status(200).json({token: newToken, refreshToken: newRefreshToken})
         }
         catch(error){
             res.status(500).json({error: error.message})

@@ -28,9 +28,9 @@ const generateRefreshToken = (user) => {
     return jwt.sign({id: user._id, email: user.email}, refreshKey, {expiresIn: '7d'})
 }
 
-const verfiyRefreshToken = (token) => {
+const verfiyRefreshToken = (refreshToken) => {
     try{
-        return jwt.verify(token, refreshKey)
+        return jwt.verify(refreshToken, refreshKey)
     }
     catch(error){
         throw new Error('Invalid refresh token')
