@@ -3,6 +3,7 @@ const app = express()
 require('dotenv').config()
 const routes = require('./routes/userRoute')
 const cors = require('cors')
+require('./Utils/redisClient')
 
 require('./db')
 

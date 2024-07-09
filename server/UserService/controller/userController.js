@@ -35,6 +35,18 @@ class UserController{
         catch(error){
             res.status(500).json({error: error.message})
         }
+    } 
+
+    async logout(req, res){
+        try{
+            const { userId } = req.body
+            if(!userId){
+                return res.status(400).json('User id reqired')
+            }
+        }
+        catch(error){
+            res.status(500).json({error: error.message})
+        }
     }
 
     async update(req, res){
@@ -60,6 +72,7 @@ class UserController{
         }
     }
 
+    /*
     async refreshToken(req, res){
         try{
             const { refreshToken } = req.body
@@ -79,6 +92,24 @@ class UserController{
         catch(error){
             res.status(500).json({error: error.message})
         }
+    }
+    */
+
+    async refreshTokenRedis(req, res){
+        const { refreshToken } = req.body
+        if(!refreshToken){
+            return res.status(400).json({error: 'Refresh token required'})
+        }
+        const payload = verfiyRefreshToken(refreshToken)
+        const user = await UserUseCase.findUserUsingId(payload.id)
+        const storedRefreshToken = await UserUseCase.generateRefreshToken(user._id)
+        if(!storedRefreshToken || storedRefreshToken !== refreshToken){
+            return res.status(403).json({error: 'Invalid refresh token'})
+        }
+        const newToken = generateToken(user)
+        const newRefreshToken = generateRefreshToken(user)
+        await UserUseCase.updateRefreshToken(user._id, newRefreshToken)
+        res.status(200).json({token: newToken, refreshToken: newRefreshToken})
     }
 }
 

@@ -5,12 +5,20 @@ const redisClient = redis.createClient({
     port: 6379
 })
 
+redisClient.on('connect', () => {
+    console.log('Connected to redis')
+})
+
+redisClient.on('ready', () => {
+    console.log('Redis client is ready to be used')
+})
+
 redisClient.on('error', (err) => {
     consle.error('Redis error', err)
 })
 
-redisClient.on('connect', () => {
-    console.log('Connected to redis')
+redisClient.on('end', () => {
+    console.log('Redis has been disconnected')
 })
 
 module.exports = redisClient
