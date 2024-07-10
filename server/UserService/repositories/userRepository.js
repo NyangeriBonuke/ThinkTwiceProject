@@ -51,7 +51,7 @@ class UserRepository{
         }
     }
 
-    /*async updateRefreshToken(id, refreshToken){
+    async updateRefreshToken(id, refreshToken){
         try{
             await User.findByIdAndUpdate(id, { refreshToken })
         }
@@ -59,8 +59,17 @@ class UserRepository{
             throw new Error(`Update refresh token error ${error}`)
         }
     }
-    */
 
+    async deleteRefreshToken(id){
+        try{
+            await User.findByIdAndUpdate(id, { $unset: { refreshToken: 1 } })
+        }
+        catch(error){
+            throw new Error(`Delete refresh token ${error}`)
+        }
+    }
+
+    /*
     async updateRefreshTokenRedis(userId, refreshToken){
         try{
             await redisClient.set(`refreshToken:${userId}`, refreshToken, 'EX', 7 * 24 * 60 * 60)
@@ -91,6 +100,7 @@ class UserRepository{
             })
         })
     }
+    */
 }
 
 module.exports = new UserRepository

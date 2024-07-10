@@ -39,10 +39,12 @@ class UserController{
 
     async logout(req, res){
         try{
-            const { userId } = req.body
-            if(!userId){
-                return res.status(400).json('User id reqired')
+            const { id } = req.body
+            if(!id){
+                res.status(400).json('Invalid user id')
             }
+            await UserUseCase.logoutUser(id)
+            return res.status(200).json('Logged out succesfully')
         }
         catch(error){
             res.status(500).json({error: error.message})
@@ -66,50 +68,32 @@ class UserController{
     async deleteAccount(req, res){
         try{
             await UserUseCase.deleteUser(req.user.id)
+            res.status(200).json('Account deleted sucessfully')
         }
         catch(error){
             res.status(500).json({error: error.message})
         }
     }
 
-    /*
     async refreshToken(req, res){
         try{
-            const { refreshToken } = req.body
-            if(!refreshToken){
+            const { token } = req.body
+            if(!token){
                 return res.status(400).json({error: 'Refresh token is required'})
             }
-            const payload = verfiyRefreshToken(refreshToken)
+            const payload = verfiyRefreshToken(token)
             const user = await UserUseCase.findUserUsingId(payload.id)
-            //if(!user || user.refreshToken !== refreshToken){ //check if the user.refreshToken exists in the database
-               // return res.status(403).json({error: 'Invalid refresh token'})
-            //}
+            if(!user || user.refreshToken !== token){ //check if the user.refreshToken exists in the database
+               return res.status(403).json({error: 'Invalid refresh token'})
+            }
             const newToken = generateToken(user)
             const newRefreshToken = generateRefreshToken(user)
-            //await UserUseCase.updateRefreshToken(user._id, newRefreshToken) //storing the refreshtoken in the db
+            await UserUseCase.refreshTokenUpdate(user._id, newRefreshToken) //storing the refreshtoken in the db
             res.status(200).json({token: newToken, refreshToken: newRefreshToken})
         }
         catch(error){
             res.status(500).json({error: error.message})
         }
-    }
-    */
-
-    async refreshTokenRedis(req, res){
-        const { refreshToken } = req.body
-        if(!refreshToken){
-            return res.status(400).json({error: 'Refresh token required'})
-        }
-        const payload = verfiyRefreshToken(refreshToken)
-        const user = await UserUseCase.findUserUsingId(payload.id)
-        const storedRefreshToken = await UserUseCase.generateRefreshToken(user._id)
-        if(!storedRefreshToken || storedRefreshToken !== refreshToken){
-            return res.status(403).json({error: 'Invalid refresh token'})
-        }
-        const newToken = generateToken(user)
-        const newRefreshToken = generateRefreshToken(user)
-        await UserUseCase.updateRefreshToken(user._id, newRefreshToken)
-        res.status(200).json({token: newToken, refreshToken: newRefreshToken})
     }
 }
 

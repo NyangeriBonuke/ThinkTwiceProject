@@ -8,7 +8,7 @@ const generateToken = (user) => {
 }
 
 const verifyToken = (req, res, next) => {
-   const token = req.header('Authorization').replace('Bearer', '')
+   const token = req.header('Authorization').replace('Bearer', '').trim()
    if(!token){
         return res.status(401).json({error: 'Access denied, token missing'})
    }

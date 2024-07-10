@@ -15,8 +15,8 @@ class UserUseCase{
             const newUser = await UserRepository.createUser({userName, email, password:hashedPassword})
             const token = generateToken(newUser)
             const refreshToken = generateRefreshToken(newUser)
-            //await this.refreshTokenUpdate(newUser._id, refreshToken) //store refreshtoken in the db
-            await UserRepository.updateRefreshTokenRedis(newUser._id, refreshToken)
+            await this.refreshTokenUpdate(newUser._id, refreshToken) //store refreshtoken in the db
+            //await UserRepository.updateRefreshTokenRedis(newUser._id, refreshToken)
             return {user: newUser, token, refreshToken}
         }
         catch(error){
@@ -36,12 +36,21 @@ class UserUseCase{
             }
             const token = generateToken(user)
             const refreshToken = generateRefreshToken(user)
-            //await this.refreshTokenUpdate(user._id, refreshToken) //store refreshToken in db
-            await UserRepository.updateRefreshTokenRedis(user._id, refreshToken)
+            await this.refreshTokenUpdate(user._id, refreshToken) //store refreshToken in db
+            //await UserRepository.updateRefreshTokenRedis(user._id, refreshToken)
             return {user, token, refreshToken}
         }
         catch(error){
             throw new Error(`Usecase login error ${error}`)
+        }
+    }
+
+    async logoutUser(id){
+        try{
+            await UserRepository.deleteRefreshToken(id)
+        }
+        catch(error){
+            throw new Error(`Usecase logout error ${error}`)
         }
     }
 
@@ -71,6 +80,15 @@ class UserUseCase{
         }
         catch(error){
             throw new Error(`Find user by id error ${error}`)
+        }
+    }
+
+    async refreshTokenUpdate(id, refreshToken){
+        try{
+            await UserRepository.updateRefreshToken(id, refreshToken)
+        }
+        catch(error){
+            throw new Error(`Update refresh token error ${error}`)
         }
     }
 }
