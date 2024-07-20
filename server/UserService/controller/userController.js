@@ -8,7 +8,7 @@ class UserController{
         try{
             const { userName, email, password } = req.body
             if(!userName || !email || !password){
-                return res.status(400).send('All fields are required')
+                return res.status(400).json('All fields are required')
             }
             const { user, token, refreshToken } = await UserUseCase.signupUser(userName, email, password)
             res.status(200).json({user, token, refreshToken})
@@ -27,7 +27,7 @@ class UserController{
         try{
             const { email, password } = req.body
             if(!email || !password){
-                return res.status(400).send('All fields are required')
+                return res.status(400).json('All fields are required')
             }
             const { user, token, refreshToken } = await UserUseCase.loginUser(email, password)
             res.status(200).json({user, token, refreshToken})

@@ -14,7 +14,7 @@ class ProductController{
 
     async find(req, res){
         try{
-            const productId = req.params
+            const {productId} = req.params
             const product = await ProductUseCase.findProduct(productId)
             if(!product){
                 return res.status(400).json(`Product does not exist`)

@@ -14,6 +14,7 @@ INSTALL THE FOLLOWING PACKAGES
 
 CHANGE THE PORT AND MONGO_URI in the './app.js' and './db.js' file respectively
 
+RUN "npm start" to start the server
 
 
 SIGN UP USER

@@ -1,11 +1,12 @@
 const express = require('express')
 const routes = express.Router()
 const ProductController = require('../controllers/productController')
+const { verifyToken, verifyAdmin } = require('../utils/jwtUtils')
 
-routes.post('/products', ProductController.create)
+routes.post('/product', verifyToken, verifyAdmin, ProductController.create)
 routes.get('/product/:productId', ProductController.find)
-routes.get('/products', ProductController.findAll)
-routes.put('/products/:productId', ProductController.update)
-routes.delete('/products', ProductController.delete)
+routes.get('/product', ProductController.findAll)
+routes.put('/product/:productId', verifyToken, verifyAdmin, ProductController.update)
+routes.delete('/product/:productId', verifyToken, verifyAdmin, ProductController.delete)
 
 module.exports = routes

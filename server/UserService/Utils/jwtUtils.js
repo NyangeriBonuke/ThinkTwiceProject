@@ -4,7 +4,7 @@ const secretKey = process.env.SECRET
 const refreshKey = process.env.REFRESH_SECRET
 
 const generateToken = (user) => {
-    return jwt.sign({id: user._id, email: user.email}, secretKey, {expiresIn: '1h'})
+    return jwt.sign({id: user._id, email: user.email, role: user.role}, secretKey, {expiresIn: '1h'})
 }
 
 const verifyToken = (req, res, next) => {
@@ -25,7 +25,7 @@ const verifyToken = (req, res, next) => {
 }
 
 const generateRefreshToken = (user) => {
-    return jwt.sign({id: user._id, email: user.email}, refreshKey, {expiresIn: '7d'})
+    return jwt.sign({id: user._id, email: user.email, role: user.role}, refreshKey, {expiresIn: '7d'})
 }
 
 const verfiyRefreshToken = (refreshToken) => {
