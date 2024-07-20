@@ -8,7 +8,17 @@ class UserRepository{
             return user
         }
         catch(error){
-            throw new Error(`Create user Error ${error}`)
+            throw new Error(`Create user Error: ${error}`)
+        }
+    }
+
+    async getAllUsers(){
+        try{
+            const users = await User.find()
+            return users
+        }
+        catch(error){
+            throw new Error(`Get all users error: ${error}`)
         }
     }
 
@@ -28,7 +38,7 @@ class UserRepository{
             return user
         }
         catch(error){
-            throw new Error(`Find user by id Error ${error}`)
+            throw new Error(`Find user by id Error: ${error}`)
         }
     }
 
@@ -38,7 +48,7 @@ class UserRepository{
             return user
         }
         catch(error){
-            throw new Error(`Update user error ${error.message}`)
+            throw new Error(`Update user error: ${error.message}`)
         }
     }
 
@@ -47,7 +57,7 @@ class UserRepository{
             await User.findByIdAndDelete(id)
         }
         catch(error){
-            throw new Error(`Delete user error ${error}`)
+            throw new Error(`Delete user error: ${error}`)
         }
     }
 
@@ -56,7 +66,7 @@ class UserRepository{
             await User.findByIdAndUpdate(id, { refreshToken })
         }
         catch(error){
-            throw new Error(`Update refresh token error ${error}`)
+            throw new Error(`Update refresh token error: ${error}`)
         }
     }
 

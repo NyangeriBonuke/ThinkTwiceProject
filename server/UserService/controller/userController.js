@@ -8,14 +8,14 @@ class UserController{
         try{
             const { userName, email, password } = req.body
             if(!userName || !email || !password){
-                res.status(400).send('All fields are required')
+                return res.status(400).send('All fields are required')
             }
             const { user, token, refreshToken } = await UserUseCase.signupUser(userName, email, password)
-            res.status(201).json({user, token, refreshToken})
+            res.status(200).json({user, token, refreshToken})
         }
         catch(error){
             if(error.message === 'Wrong Credentials'){
-                res.status(409).json({error: error.message})
+                res.status(400).json({error: error.message})
             }
             else{
                 res.status(500).json({error: error.message})
@@ -27,7 +27,7 @@ class UserController{
         try{
             const { email, password } = req.body
             if(!email || !password){
-                res.status(400).send('All fields are required')
+                return res.status(400).send('All fields are required')
             }
             const { user, token, refreshToken } = await UserUseCase.loginUser(email, password)
             res.status(200).json({user, token, refreshToken})
@@ -35,11 +35,21 @@ class UserController{
         catch(error){
             res.status(500).json({error: error.message})
         }
-    } 
+    }
+
+    async getAllUsers(req, res){
+        try{
+            const users = await UserUseCase.getUsers()
+            res.status(200).json(users)
+        }
+        catch(error){
+            res.status(500).json({error: error.message})
+        }
+    }
 
     async logout(req, res){
         try{
-            const { id } = req.body
+            const id = req.params.id
             if(!id){
                 res.status(400).json('Invalid user id')
             }
@@ -55,9 +65,13 @@ class UserController{
         try{
             const { userName } = req.body
             if(!userName){
-                res.status(400).send('Username required')
+                return res.status(400).json('Username required')
             }
-            const updatedUser = await UserUseCase.updateUserName(req.user.id, userName)
+            const id = req.params.id
+            if(!id){
+                return res.status(400).json('User id is required')
+            }
+            const updatedUser = await UserUseCase.updateUserName(id, userName)
             res.status(200).json(updatedUser)
         }
         catch(error){
@@ -67,7 +81,11 @@ class UserController{
 
     async deleteAccount(req, res){
         try{
-            await UserUseCase.deleteUser(req.user.id)
+            const id = req.params.id
+            if(!id){
+                return res.status(400).json('User id is required')
+            }
+            await UserUseCase.deleteUser(id)
             res.status(200).json('Account deleted sucessfully')
         }
         catch(error){

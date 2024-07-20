@@ -20,7 +20,7 @@ class UserUseCase{
             return {user: newUser, token, refreshToken}
         }
         catch(error){
-            throw new Error(`Usecase signup error ${error}`)
+            throw new Error(`Usecase signup error: ${error}`)
         }
     }
 
@@ -41,7 +41,17 @@ class UserUseCase{
             return {user, token, refreshToken}
         }
         catch(error){
-            throw new Error(`Usecase login error ${error}`)
+            throw new Error(`Usecase login error: ${error}`)
+        }
+    }
+
+    async getUsers(){
+        try{
+            const users = await UserRepository.getAllUsers()
+            return users
+        }
+        catch(error){
+            throw new Error(`Usecase get all users error: ${error}`)
         }
     }
 
@@ -50,7 +60,7 @@ class UserUseCase{
             await UserRepository.deleteRefreshToken(id)
         }
         catch(error){
-            throw new Error(`Usecase logout error ${error}`)
+            throw new Error(`Usecase logout error: ${error}`)
         }
     }
 
@@ -60,7 +70,7 @@ class UserUseCase{
             return updatedUser
         }
         catch(error){
-            throw new Error(`Update user error ${error}`)
+            throw new Error(`Update user error: ${error}`)
         }
     }
 
@@ -69,7 +79,7 @@ class UserUseCase{
             await userRepository.userDelete(id)
         }
         catch(error){
-            throw new Error(`Delete user error ${error}`)
+            throw new Error(`Delete user error: ${error}`)
         }
     }
 
@@ -79,7 +89,7 @@ class UserUseCase{
             return user
         }
         catch(error){
-            throw new Error(`Find user by id error ${error}`)
+            throw new Error(`Find user by id error: ${error}`)
         }
     }
 
@@ -88,7 +98,7 @@ class UserUseCase{
             await UserRepository.updateRefreshToken(id, refreshToken)
         }
         catch(error){
-            throw new Error(`Update refresh token error ${error}`)
+            throw new Error(`Update refresh token error: ${error}`)
         }
     }
 }
