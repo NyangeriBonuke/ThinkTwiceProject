@@ -3,7 +3,7 @@ const routes = express.Router()
 const ProductController = require('../controllers/productController')
 const { verifyToken, verifyAdmin } = require('../utils/jwtUtils')
 
-routes.post('/product', verifyToken, verifyAdmin, ProductController.create)
+routes.post('/product', verifyToken, verifyAdmin, upload.fields([{name: 'images', maxCount: 10}, {name: 'videos', maxCount: 5}]), ProductController.create)
 routes.get('/product/:productId', ProductController.find)
 routes.get('/product', ProductController.findAll)
 routes.put('/product/:productId', verifyToken, verifyAdmin, ProductController.update)

@@ -4,6 +4,13 @@ class ProductController{
     async create(req, res){
         try{
             const productData = req.body
+            if(req.files){
+                productData.media = {
+                    images: req.files.images ? req.files.images.map(file => file.path) : [],
+                    videos: req.files.videos ? req.files.videos.map(file => file.path) : []
+                }
+            }
+
             const newProduct = await ProductUseCase.createProduct(productData)
             res.status(200).json(newProduct)
         }
