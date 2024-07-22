@@ -10,6 +10,8 @@ app.use(cors())
 
 app.use('/api', routes)
 
+app.use('/uploads', express.static('uploads'))
+
 app.listen(process.env.PORT, () => {
     console.log('Server started')
 })

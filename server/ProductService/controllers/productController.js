@@ -1,4 +1,5 @@
 const ProductUseCase = require('../usecases/productUseCase')
+const fs = require('fs-extra')
 
 class ProductController{
     async create(req, res){
@@ -62,10 +63,27 @@ class ProductController{
     async delete(req, res){
         try{
             const { productId } = req.params
-            const deletedProduct = await ProductUseCase.deleteProduct(productId)
-            if(!deletedProduct){
-                return res.status(400).json({error: 'Product not found'})
+            const product = await ProductUseCase.findProduct(productId)
+            if(!product){
+                return res.status(400).json({error: 'Product does not exist'})
             }
+
+            const imagesDir = path.join(__dirname, '../uploads/images')
+            const videosDir = path.join(__dirname, '../uploads/vidoes')
+
+            if(product.media.images){
+                for(const image of product.media.images){
+                    await fs.remove(path.join(imagesDir, image))
+                }
+            }
+
+            if(product.media.videos){
+                for(const video of product.media.videos){
+                    await fs.remove(path.join(videosDir, video))
+                }
+            }
+
+            const deletedProduct = await ProductUseCase.deleteProduct(productId)
             res.status(200).json(deletedProduct)
         }
         catch(error){

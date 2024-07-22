@@ -34,4 +34,4 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 50 }
 })
 
-module.exports = upload
+module.exports = { upload }
