@@ -9,6 +9,8 @@ app.use(cors())
 
 app.use('/api', routes)
 
+require('./db.js')
+
 app.listen(process.env.PORT, () => {
     console.log('Server started')
 })
