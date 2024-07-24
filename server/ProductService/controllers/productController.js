@@ -5,18 +5,19 @@ class ProductController{
     async create(req, res){
         try{
             const productData = req.body
-            if(req.files){
-                productData.media = {
-                    images: req.files.images ? req.files.images.map(file => file.path) : [],
-                    videos: req.files.videos ? req.files.videos.map(file => file.path) : []
-                }
+            if(req.files.images){
+                productData.media.images = req.files.images.map(file => file.path)
+            }
+
+            if(req.files.videos){
+                productData.media.videos = req.files.videos.map(file => file.path)
             }
 
             const newProduct = await ProductUseCase.createProduct(productData)
             res.status(200).json(newProduct)
         }
         catch(error){
-            res.status(500).json(error)
+            res.status(500).json({error: error.message})
         }
     }
 
@@ -87,7 +88,7 @@ class ProductController{
             res.status(200).json(deletedProduct)
         }
         catch(error){
-            res.status(500).json(error)
+            res.status(500).json({error: error.message})
         }
     }
 }

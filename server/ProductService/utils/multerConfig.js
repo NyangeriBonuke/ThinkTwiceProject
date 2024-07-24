@@ -4,10 +4,10 @@ const path = require('path')
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         if(file.mimetype.startsWith('/image')){
-            cb(null, path.join(__dirname, '../uploads/images'))
+            cb(null, '../uploads/images')
         }
         else if(file.mimetype.startsWith('/video')){
-            cb(null, path.join(__dirname, '../uploads/videos'))
+            cb(null, '../uploads/videos')
         }
         else{
             cb({message: 'This is neither a file nor an image'}, false)

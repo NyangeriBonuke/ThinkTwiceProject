@@ -57,7 +57,6 @@ const ProductSchema = new mongoose.Schema({
     media: {
         images: [String],
         videos: [String],
-        documents: [String]
     },
     targetAudience: {
         type: String
